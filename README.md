@@ -27,7 +27,7 @@ wget http://central.maven.org/maven2/org/apache/httpcomponents/httpmime/4.3.6/ht
 
 ## 使用
 #### 运行靶机
-项目提供了一个靶机（jsEncrypter/server）,靶机提供了7个算法对密码进行加密后传输，后台解密在进行密码匹配。
+项目提供了一个用php编写的靶机（jsEncrypter/server）,靶机提供了7个算法对密码进行加密后传输，后台解密，最后进行密码匹配。
 
 * base64
 * md5
@@ -41,7 +41,7 @@ wget http://central.maven.org/maven2/org/apache/httpcomponents/httpmime/4.3.6/ht
 
 #### 编写phantomJS运行脚本
 
-`jsEncrypter/js/jsEncrypter_base.js`为插件phantomJS脚本模板。我们只需要将实现加密算法的js文件引入，并在js_crypter函数体共完成对加密函数的调用即可。
+`jsEncrypter/js/jsEncrypter_base.js`为插件phantomJS脚本模板。我们只需要将实现加密算法的js文件引入模板脚本，并在模板脚本的js_encrypt函数体中完成对加密函数的调用。
 
 ````
 ......
@@ -66,6 +66,13 @@ function js_encrypt(payload){
 项目jsEncrypter/server/TestScript目录下是编写好的对应靶机各个加密算法的phantomJS脚本，可以参考！
 
 #### 运行phantomJS并测试
+运行phantomJS
+```
+>phantomJS.exe jsEncrypter_sha1.js 
+```
+
+测试的目的是为了确保我们编写的phantomJS脚本能够正常加密payload。
+
 ![运行phantomJS并测试](./doc/test.gif)
 
 #### 抓包暴力破解
