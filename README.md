@@ -77,3 +77,6 @@ function js_encrypt(payload){
 
 #### 抓包暴力破解
 ![抓包暴力破解](./doc/crack.gif)
+
+## 更多
+[编写加密传输爆破插件jsEncrypter](http://gv7.me/articles/2017/jsEncrypter/)
