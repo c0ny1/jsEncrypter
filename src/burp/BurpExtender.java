@@ -1,4 +1,4 @@
-package burp;
+﻿package burp;
 
 import java.awt.Component;
 import java.io.PrintWriter;
@@ -18,7 +18,7 @@ import org.apache.http.util.EntityUtils;
 
 public class BurpExtender implements IBurpExtender,IIntruderPayloadProcessor,ITab {
 	private String extensionName = "jsEncrypter";
-	private String version ="v1.0";
+	private String version ="v0.1";
 	private IBurpExtenderCallbacks callbacks;
 	private IExtensionHelpers helpers;
 	private PrintWriter stdout;
@@ -103,7 +103,7 @@ public class BurpExtender implements IBurpExtender,IIntruderPayloadProcessor,ITa
 		String bannerInfo = 
 				    "[+]\n"
 				  + "[+] #####################################\n"
-				  + "[+]    jsEncrypter v1.0\n"
+				  + "[+]    jsEncrypter v0.1\n"
 				  + "[+]    anthor: c0ny1\n"
 				  + "[+]    email:  root@gv7.me\n"
 				  + "[+]    github: http://github.com/c0ny1/jsEncrypter\n"

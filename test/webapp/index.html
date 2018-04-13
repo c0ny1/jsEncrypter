@@ -1,0 +1,95 @@
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>密码加密传输Demo</title>
+	<script type="text/javascript" src="js/jquery-3.2.1.min.js"></script>
+	<script type="text/javascript" src="js/crypto-js.js"></script>
+	<script type="text/javascript" src="js/md5.js"></script>
+	<script type="text/javascript" src="js/sha1.js"></script>
+	<script type="text/javascript" src="js/jsencrypt.js"></script>
+	<script type="text/javascript">
+	    $(function () {
+	        $("#submit").click(function () {
+	            var m = $("select").val();
+		        var username = $("input[name=username]").val();
+		        var password = $("input[name=password]").val();
+		        var en_password = password;
+
+		        switch(m){
+		        	case '0':
+		        		var words = CryptoJS.enc.Utf8.parse(password);
+		        		en_password = CryptoJS.enc.Base64.stringify(words);
+		        		break;
+		        	case '1':
+		        		en_password = hex_md5(password);
+		        		break;
+		        	case '2':
+		        		en_password = hex_sha1(password);
+		        		break;
+		        	case '3':
+		        		en_password = CryptoJS.SHA256(password);
+		        		break;
+		        	case '4':
+		        		en_password = CryptoJS.SHA384(password);
+		        		break;
+		        	case '5':
+		        		en_password = CryptoJS.SHA512(password);
+		        		break;
+		        	case '6':
+		        	    var encrypt = new JSEncrypt();
+	                 	encrypt.setPublicKey($("input[name=public_key]").val());
+	            		en_password = encrypt.encrypt(password);
+		        		break;
+		        	default:
+		        		break;
+		        }
+		        
+	            $.ajax({
+	                url: 'login_check.php',
+	                data: "m=" + m + "&username=" + encodeURI(username) + "&password=" + encodeURI(en_password).replace(/\+/g,'%2B'), 
+	                type: 'post',
+	                success: function (msg) {
+	                    alert(msg);
+	                }
+	            });
+	            
+	        });
+	    });
+	</script>
+</head>
+
+<body>
+	<form>
+		<table>
+			<tr>
+				<td>encrypt:</td>
+				<td>
+					<select>
+						<option value="0">base64</option>
+						<option value="1">md5</option>
+						<option value="2">sha1</option>
+						<option value="3">sha256</option>
+						<option value="4">sha384</option>
+						<option value="5">sha512</option>
+						<option value="6">RSA</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td>username:</td>
+				<td><input type="text" name="username"/></td>
+			</tr>
+			<tr>
+				<td>password:</td>
+				<td><input type="password" name="password"/></td>
+			</tr>
+			<tr>
+				<td>
+					<input type="hidden" name="public_key" value="MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC0Llg1bVZhnyslfezwfeOkvnXWq59bDtmQyHvxkP/38Fw8QQXBfROCgzGc+Te6pOPl6Ye+vQ1rAnisBaP3rMk40i3OpallzVkuwRKydek3V9ufPpZEEH4eBgInMSDiMsggTWxcI/Lvag6eHjkSc67RTrj96oxj0ipVRqjxW4X6HQIDAQAB"/>
+				</td>
+				<td><input id="submit" type="button" value="submit"/></td>
+			</tr>
+		</table>
+	</form>
+</body>
+</html>
