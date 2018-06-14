@@ -80,3 +80,8 @@ function js_encrypt(payload){
 
 ## 更多
 [编写加密传输爆破插件jsEncrypter](http://gv7.me/articles/2017/jsEncrypter/)
+
+[jsEncrypter的Node.js版server脚本](http://gv7.me/articles/2018/jsEncrypter-nodejs-server-script/)
+
+[快速定位前端加密方法](http://gv7.me/articles/2018/fast-locate-the-front-end-encryption-method/)
+[]()
