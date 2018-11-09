@@ -29,16 +29,28 @@ if(wasSuccessful){
 }
 
 var service = server.listen(host+':'+port,function(request, response){
-	if(request.method == 'POST'){
-		var payload = request.post['payload'];
-        var encrypt_payload = js_encrypt(payload); 
-        console.log('[+] ' + payload + ':' + encrypt_payload);
-		response.statusCode = 200;
-  		response.write(encrypt_payload.toString());
-        response.close();
-	}else{
-		  response.statusCode = 200;
-  		  response.write("^_^\n\rhello jsEncrypter!");
-          response.close();
-	}
+ 	try{
+		if(request.method == 'POST'){
+			var payload = request.post['payload'];
+			var encrypt_payload = js_encrypt(payload); 
+			console.log('[+] ' + payload + ':' + encrypt_payload);
+			response.statusCode = 200;
+			response.write(encrypt_payload.toString());
+			response.close();
+		}else{
+			  response.statusCode = 200;
+			  response.write("^_^\n\rhello jsEncrypter!");
+			  response.close();
+		}
+	}catch(e){
+		console.log('\n-----------------Error Info--------------------')
+		var fullMessage = "Message: "+e.toString() + ':'+ e.line;
+		for (var p in e) {
+			fullMessage += "\n" + p.toUpperCase() + ": " + e[p];
+		} 
+		console.log(fullMessage);
+		console.log('---------------------------------------------')
+		console.log('[*] phantomJS exit!')
+		phantom.exit();
+    }	
 });

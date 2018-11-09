@@ -79,9 +79,7 @@ function js_encrypt(payload){
 ![抓包暴力破解](./doc/crack.gif)
 
 ## 更多
-[编写加密传输爆破插件jsEncrypter](http://gv7.me/articles/2017/jsEncrypter/)
-
-[jsEncrypter的Node.js版server脚本](http://gv7.me/articles/2018/jsEncrypter-nodejs-server-script/)
-
-[快速定位前端加密方法](http://gv7.me/articles/2018/fast-locate-the-front-end-encryption-method/)
-[]()
+* [编写加密传输爆破插件jsEncrypter](http://gv7.me/articles/2017/jsEncrypter/)
+* [快速定位前端加密方法](http://gv7.me/articles/2018/fast-locate-the-front-end-encryption-method/)
+* [解决jsEncrypter脚本错误代码不报错问题](http://gv7.me/articles/2018/solve-jsEncrypter-script-error-code-is-not-wrong/)
+* [jsEncrypter的Node.js版server脚本](http://gv7.me/articles/2018/jsEncrypter-nodejs-server-script/)
