@@ -1,5 +1,5 @@
 /**
-* DESº”√‹/Ω‚√‹
+* DES encryption and decryption
 * @Copyright Copyright (c) 2006
 * @author Guapo
 * @see DESCore
@@ -8,7 +8,7 @@
 /*
 * encrypt the string to string made up of hex
 * return the encrypted string
-* º”√‹
+* encryption
 */
 function strEnc(data,firstKey,secondKey,thirdKey){
 
