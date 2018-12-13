@@ -1,5 +1,5 @@
 /**
-* DES encryption and decryption
+* DES encryption/decryption
 * @Copyright Copyright (c) 2006
 * @author Guapo
 * @see DESCore
