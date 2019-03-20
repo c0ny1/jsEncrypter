@@ -1,32 +1,22 @@
 # jsEncrypter
-一个用于加密传输爆破的Burp Suite插件
+本插件使用phantomjs调用前端加密函数对数据进行加密，方便对加密数据输入点进行fuzz。
 
-## 编译
+## 0x01 插件编译
 
-该项目依赖包如下：
+安装好maven，然后执行以下命令即可编译成功：
 
 ```
-mkdir ./jsEncrypter/lib
-cd jsEncrypter/lib 
-wget http://central.maven.org/maven2/commons-codec/commons-codec/1.6/commons-codec-1.6.jar
-wget http://central.maven.org/maven2/commons-logging/commons-logging/1.1.3/commons-logging-1.1.3.jar
-wget http://central.maven.org/maven2/org/apache/httpcomponents/fluent-hc/4.3.6/fluent-hc-4.3.6.jar
-wget http://central.maven.org/maven2/org/apache/httpcomponents/httpclient/4.3.6/httpclient-4.3.6.jar
-wget http://central.maven.org/maven2/org/apache/httpcomponents/httpclient-cache/4.3.6/httpclient-cache-4.3.6.jar
-wget http://central.maven.org/maven2/org/apache/httpcomponents/httpcore/4.3.3/httpcore-4.3.3.jar
-wget http://central.maven.org/maven2/org/apache/httpcomponents/httpmime/4.3.6/httpmime-4.3.6.jar
+mvn package
 ```
 
-导入eclipse中编译
-
-## 安装
+## 0x02 插件安装
 
 ![加载](./doc/load.png)
 
 ![加载](./doc/tab.png)
 
-## 使用
-#### 运行靶机
+## 0x03 插件使用
+#### 3.1 运行靶机
 项目提供了一个用php编写的靶机（jsEncrypter/server）,靶机提供了7个算法对密码进行加密后传输，后台解密，最后进行密码匹配。
 
 * base64
@@ -39,7 +29,7 @@ wget http://central.maven.org/maven2/org/apache/httpcomponents/httpmime/4.3.6/ht
 
 ![靶机](./doc/server.png)
 
-#### 编写phantomJS运行脚本
+#### 3.2 编写phantomJS运行脚本
 
 `jsEncrypter/js/jsEncrypter_base.js`为插件phantomJS脚本模板。我们只需要将实现加密算法的js文件引入模板脚本，并在模板脚本的js_encrypt函数体中完成对加密函数的调用。
 
@@ -65,8 +55,9 @@ function js_encrypt(payload){
 
 项目jsEncrypter/server/TestScript目录下是编写好的对应靶机各个加密算法的phantomJS脚本，可以参考！
 
-#### 运行phantomJS并测试
+#### 3.3 运行phantomJS并测试
 运行phantomJS
+
 ```
 >phantomJS.exe jsEncrypter_sha1.js 
 ```
@@ -75,10 +66,10 @@ function js_encrypt(payload){
 
 ![运行phantomJS并测试](./doc/test.gif)
 
-#### 抓包暴力破解
+#### 3.4 抓包暴力破解
 ![抓包暴力破解](./doc/crack.gif)
 
-## 更多
+## 0x04 相关文章
 * [编写加密传输爆破插件jsEncrypter](http://gv7.me/articles/2017/jsEncrypter/)
 * [快速定位前端加密方法](http://gv7.me/articles/2018/fast-locate-the-front-end-encryption-method/)
 * [解决jsEncrypter脚本错误代码不报错问题](http://gv7.me/articles/2018/solve-jsEncrypter-script-error-code-is-not-wrong/)
