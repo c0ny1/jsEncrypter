@@ -139,8 +139,9 @@ public class GUI{
 		taTestPayload = new JTextArea();
 		taTestPayload.setColumns(30);
 		for (String payload : testPayload) {
-			taTestPayload.append(payload + "\n");
+			taTestPayload.append(payload + "\n\r");
 		}
+
         spTestPayload = new JScrollPane(taTestPayload,
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -168,10 +169,10 @@ public class GUI{
 	// 测试
 	private void Test() {
 		taResultPayload.setText("");
-		String[] payloads = taTestPayload.getText().split("\n");
+		String[] payloads = taTestPayload.getText().split("\n\r");
 		for (String payload : payloads) {
 			String newPayload = sendTestPaylaod(payload);
-			taResultPayload.append(newPayload + "\n");
+			taResultPayload.append(newPayload + "\n\r");
 		}
 	}
 
