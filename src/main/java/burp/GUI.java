@@ -21,6 +21,8 @@ public class GUI{
 	private JTextField tfHost;
 	private JLabel lbPort;
 	private JTextField tfPort;
+	private JLabel lbTimeout;
+	private JTextField tfTimeout;
 	private JButton btnConn;
 	private JLabel lbConnectInfo;
 	private JLabel lbConnectStatus;
@@ -56,7 +58,6 @@ public class GUI{
 
 		lbHost = new JLabel("Host:");
 		panel.add(lbHost);
-
 		tfHost = new JTextField();
 		tfHost.setColumns(20);
 		tfHost.setText("127.0.0.1");
@@ -64,14 +65,21 @@ public class GUI{
 		
 		verticalStrut = Box.createVerticalStrut(20);
 		panel.add(verticalStrut);
-
 		lbPort = new JLabel("Port:");
 		panel.add(lbPort);
-
 		tfPort = new JTextField();
 		tfPort.setText("1664");
 		panel.add(tfPort);
-		tfPort.setColumns(20);
+		tfPort.setColumns(10);
+
+		verticalStrut = Box.createVerticalStrut(20);
+		panel.add(verticalStrut);
+		lbTimeout = new JLabel("Timeout:");
+		panel.add(lbTimeout);
+		tfTimeout = new JTextField();
+		tfTimeout.setText("5000");
+		panel.add(tfTimeout);
+		tfTimeout.setColumns(10);
 
 		btnConn = new JButton("Connect");
 		btnConn.setToolTipText("Test the connection phantomJS");
@@ -137,6 +145,10 @@ public class GUI{
 	public Component getComponet(){
 		return contentPane;
 	}
+
+	public Integer getTimeout(){
+		return Integer.valueOf(tfTimeout.getText());
+	}
 	
 	// 测试
 	private void Test() {
@@ -159,8 +171,8 @@ public class GUI{
 		String newPayload = null;
 		try {
 			HttpClient hc = new HttpClient(this.getURL());
-			hc.setConnTimeout(3000);
-			hc.setReadTimeout(3000);
+			hc.setConnTimeout(Integer.valueOf(tfTimeout.getText()));
+			hc.setReadTimeout(Integer.valueOf(tfTimeout.getText()));
 			String data = "payload=" + payload;
 			hc.setData(data);
 			hc.sendPost();
@@ -186,8 +198,8 @@ public class GUI{
 	private void testConnect(){
 		try {
 			HttpClient hc = new HttpClient(this.getURL());
-			hc.setReadTimeout(3000);
-			hc.setConnTimeout(3000);
+			hc.setReadTimeout(Integer.valueOf(tfTimeout.getText()));
+			hc.setConnTimeout(Integer.valueOf(tfTimeout.getText()));
 			hc.sendGet();
 			int n = helpers.indexOf(hc.getRspData().getBytes(), "hello".getBytes(), false, 0, hc.getRspData().length());
 			if((hc.getStatusCode() == 200)&&(n != -1)){

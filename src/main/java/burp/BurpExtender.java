@@ -6,7 +6,7 @@ import javax.swing.SwingUtilities;
 
 public class BurpExtender implements IBurpExtender,IIntruderPayloadProcessor,ITab {
     public final static String extensionName = "jsEncrypter";
-	public final static String version ="0.2.1";
+	public final static String version ="0.2.2";
 	private IBurpExtenderCallbacks callbacks;
 	private IExtensionHelpers helpers;
 	private PrintWriter stdout;
@@ -55,8 +55,8 @@ public class BurpExtender implements IBurpExtender,IIntruderPayloadProcessor,ITa
 		String strPayload = null;
 		try {
 			HttpClient hc = new HttpClient(gui.getURL());
-			hc.setConnTimeout(3000);
-			hc.setReadTimeout(3000);
+			hc.setConnTimeout(gui.getTimeout());
+			hc.setReadTimeout(gui.getTimeout());
 			String data = "payload=" + payload;
 			hc.setData(data);
 			hc.sendPost();
