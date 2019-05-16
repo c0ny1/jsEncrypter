@@ -2,19 +2,10 @@ package burp;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.JTextField;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JButton;
-import javax.swing.JTextArea;
 import java.awt.FlowLayout;
-import javax.swing.JSplitPane;
 import java.awt.Component;
-import javax.swing.Box;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.io.PrintWriter;
@@ -150,11 +141,17 @@ public class GUI{
 	// 测试
 	private void Test() {
 		taResultPayload.setText("");
-		String[] payloads = taTestPayload.getText().split("\n\r");
-		for (String payload : payloads) {
-			String newPayload = sendTestPaylaod(payload);
-			taResultPayload.append(newPayload + "\n\r");
-		}
+		btnTest.setEnabled(false);
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				String[] payloads = taTestPayload.getText().split("\n\r");
+				for (String payload : payloads) {
+					String newPayload = sendTestPaylaod(payload);
+					taResultPayload.append(newPayload + "\n\r");
+				}
+				btnTest.setEnabled(true);
+			}
+		});
 	}
 
 	// 发送测试payload
