@@ -5,16 +5,6 @@ import java.awt.Color;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
-
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.JLabel;
@@ -28,8 +18,6 @@ import javax.swing.Box;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
 
 public class GUI{
 	private IBurpExtenderCallbacks mCall;
@@ -52,9 +40,6 @@ public class GUI{
 	private JScrollPane spTestPayload;
 	private JTextArea taResultPayload;
 	private JScrollPane spResultPayload;
-	
-	private CloseableHttpClient  client;
-	private RequestConfig requestConfig;
 	private boolean isSucces = false;
 	private String testPayload[] = {
 			"123456","a123456","123456a","5201314",
@@ -69,10 +54,6 @@ public class GUI{
 		this.helpers = callbacks.getHelpers();
 		this.stdout = new PrintWriter(callbacks.getStdout(), true);
 		this.stderr = new PrintWriter(callbacks.getStderr(), true);
-		
-		this.requestConfig = RequestConfig.custom().setConnectionRequestTimeout(300).setConnectTimeout(300).setSocketTimeout(300).build();
-		this.client = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
-		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
@@ -179,24 +160,22 @@ public class GUI{
 	// 发送测试payload
 	private String sendTestPaylaod(String payload) {
 		String newPayload = null;
-		String currentPayload = payload;
-
-		HttpPost httpPost = new HttpPost(this.getURL());
 		try {
-			List nameValuePairs = new ArrayList(1);
-			nameValuePairs.add(new BasicNameValuePair("payload", currentPayload));
-			httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-
-			CloseableHttpResponse response = client.execute(httpPost);
-
-			String responseAsString = EntityUtils.toString(response.getEntity());
-			newPayload = responseAsString;
+			HttpClient hc = new HttpClient(this.getURL());
+			hc.setConnTimeout(3000);
+			hc.setReadTimeout(3000);
+			String data = "payload=" + payload;
+			hc.setData(data);
+			hc.sendPost();
+			newPayload = hc.getRspData();
 		} catch (Exception e) {
 			stderr.println(e.getMessage());
+			newPayload = e.getMessage();
 		}
 		return newPayload;
 	}
-	
+
+
 	// 获取phantomJS
 	public String getURL(){
 		String URL;
@@ -208,14 +187,13 @@ public class GUI{
 	
 	//测试连接phantomJS
 	private void testConnect(){
-		HttpGet httpGet = new HttpGet(this.getURL());
 		try {
-			
-			CloseableHttpResponse response = client.execute(httpGet);
-			int statusCode = response.getStatusLine().getStatusCode();
-			String responseAsString = EntityUtils.toString(response.getEntity());
-			int n = helpers.indexOf(responseAsString.getBytes(), "hello".getBytes(), false, 0, responseAsString.length());
-			if((statusCode == 200)&&(n != -1)){
+			HttpClient hc = new HttpClient(this.getURL());
+			hc.setReadTimeout(3000);
+			hc.setConnTimeout(3000);
+			hc.sendGet();
+			int n = helpers.indexOf(hc.getRspData().getBytes(), "hello".getBytes(), false, 0, hc.getRspData().length());
+			if((hc.getStatusCode() == 200)&&(n != -1)){
 				stdout.println("[+] connect success!");
 				lbConnectStatus.setText("True");
 				isSucces = true;

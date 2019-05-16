@@ -2,27 +2,15 @@ package burp;
 
 import java.awt.Component;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
 import javax.swing.SwingUtilities;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
 
 public class BurpExtender implements IBurpExtender,IIntruderPayloadProcessor,ITab {
-	private String extensionName = "jsEncrypter";
-	private String version ="0.2";
+    public final static String extensionName = "jsEncrypter";
+	public final static String version ="0.2.1";
 	private IBurpExtenderCallbacks callbacks;
 	private IExtensionHelpers helpers;
 	private PrintWriter stdout;
 	private PrintWriter stderr;
-	private CloseableHttpClient  client;
-	private RequestConfig requestConfig;
 	private GUI gui;
 	
 	@Override
@@ -34,10 +22,7 @@ public class BurpExtender implements IBurpExtender,IIntruderPayloadProcessor,ITa
 		
 		callbacks.setExtensionName(extensionName+" "+version);
 		callbacks.registerIntruderPayloadProcessor(this);
-		
-		this.requestConfig = RequestConfig.custom().setConnectionRequestTimeout(3000).setConnectTimeout(3000).setSocketTimeout(3000).build();
-		this.client = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
-		//this.client = HttpClients.createDefault();
+
 		BurpExtender.this.gui = new GUI(callbacks);
 		SwingUtilities.invokeLater(new Runnable()
 	      {
@@ -60,25 +45,28 @@ public class BurpExtender implements IBurpExtender,IIntruderPayloadProcessor,ITa
 	public String getProcessorName() {
 		return extensionName;
 	}
+
 	@Override
 	public byte[] processPayload(byte[] currentPayload, byte[] originalPayload, byte[] baseValue) {
-		byte[] newpayload ="".getBytes();
+		byte[] newPayload = "".getBytes();
+
 		String payload = new String(currentPayload);
-		HttpPost httpPost = new HttpPost(gui.getURL());
+
+		String strPayload = null;
 		try {
-			List nameValuePairs = new ArrayList(1);
-			nameValuePairs.add(new BasicNameValuePair("payload",payload));
-			httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-			CloseableHttpResponse response = client.execute(httpPost);
-			
-			String responseAsString = EntityUtils.toString(response.getEntity());
-			newpayload = helpers.stringToBytes(responseAsString);
-			
+			HttpClient hc = new HttpClient(gui.getURL());
+			hc.setConnTimeout(3000);
+			hc.setReadTimeout(3000);
+			String data = "payload=" + payload;
+			hc.setData(data);
+			hc.sendPost();
+			strPayload = hc.getRspData();
 		} catch (Exception e) {
 			stderr.println(e.getMessage());
-			newpayload = "JsEncrypter cannot connect phantomJS!".getBytes();
+			newPayload = e.getMessage().getBytes();
 		}
-		return newpayload;
+		newPayload = helpers.stringToBytes(strPayload);
+		return newPayload;
 	}
 
 	//
