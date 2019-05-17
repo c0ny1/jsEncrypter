@@ -15,8 +15,8 @@ public class HttpClient {
     private Integer connTimeout = 3000;
     private Integer readTimeout = 3000;
     private String ua = "jsEncrypter client";
-    private Integer statusCode;
-    private String rspData;
+    private Integer statusCode = 0;
+    private String rspData = null;
 
     public HttpClient(String url){
         this.url = url;
@@ -89,9 +89,9 @@ public class HttpClient {
                 rspData += line;
             }
         }catch (MalformedURLException e){
-            rspData =  e.getMessage();
+            rspData =  "jsEncrypter wanning:" + e.getMessage();
         }catch (IOException e){
-            rspData =  e.getMessage();
+            rspData =  "jsEncrypter wanning:" + e.getMessage();
         }
         this.rspData = rspData;
     }
@@ -102,27 +102,29 @@ public class HttpClient {
         BufferedReader in = null;
         try {
             URL realUrl = new URL(this.url);
-            URLConnection conn = realUrl.openConnection();
-            conn.setRequestProperty("user-agent", this.ua);
-            conn.setConnectTimeout(this.connTimeout);
-            conn.setReadTimeout(this.readTimeout);
+            URLConnection urlConn = realUrl.openConnection();
+            HttpURLConnection httpConn = (HttpURLConnection) urlConn;
+            httpConn.setRequestProperty("user-agent", this.ua);
+            httpConn.setConnectTimeout(this.connTimeout);
+            httpConn.setReadTimeout(this.readTimeout);
 
-            conn.setDoOutput(true);
-            conn.setDoInput(true);
-            out = new PrintWriter(conn.getOutputStream());
+            httpConn.setDoOutput(true);
+            httpConn.setDoInput(true);
+            out = new PrintWriter(httpConn.getOutputStream());
             out.print(data);
-            conn.connect();
+            httpConn.connect();
             out.flush();
 
-            in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            this.statusCode = httpConn.getResponseCode();
+            in = new BufferedReader(new InputStreamReader(httpConn.getInputStream()));
             String line;
             while ((line = in.readLine()) != null) {
                 rspData += line;
             }
         }catch (MalformedURLException e){
-            rspData =  e.getMessage();
+            rspData =  "jsEncrypter wanning:" + e.getMessage();
         }catch (IOException e){
-            rspData = e.getMessage();
+            rspData = "jsEncrypter wanning:" + e.getMessage();
         }
         this.rspData = rspData;
     }

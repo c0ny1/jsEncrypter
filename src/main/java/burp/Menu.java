@@ -31,8 +31,8 @@ public class Menu implements IContextMenuFactory{
                     strReq = strReq.replace(strSelect,strEncrypt);
                     byte[] newRequst = BurpExtender.helpers.stringToBytes(strReq);
                     reqRsp.setRequest(newRequst);
-                } catch (UnsupportedEncodingException e1) {
-                    BurpExtender.stderr.println(e1.getMessage());
+                } catch (UnsupportedEncodingException er) {
+                    BurpExtender.stderr.println(er.getMessage());
                 }
             }
         });

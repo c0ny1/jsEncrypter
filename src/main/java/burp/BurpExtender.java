@@ -6,7 +6,7 @@ import javax.swing.SwingUtilities;
 
 public class BurpExtender implements IBurpExtender,IIntruderPayloadProcessor,ITab {
     public final static String extensionName = "jsEncrypter";
-	public final static String version ="0.2.2";
+	public final static String version ="0.3";
 	public static IBurpExtenderCallbacks callbacks;
 	public static IExtensionHelpers helpers;
 	public static PrintWriter stdout;
@@ -24,15 +24,13 @@ public class BurpExtender implements IBurpExtender,IIntruderPayloadProcessor,ITa
 		callbacks.registerContextMenuFactory(new Menu());
 		callbacks.registerIntruderPayloadProcessor(this);
 
-		BurpExtender.this.gui = new GUI(callbacks);
+		BurpExtender.this.gui = new GUI();
 		SwingUtilities.invokeLater(new Runnable()
 	      {
 	        public void run()
 	        {
-	          BurpExtender.this.callbacks.addSuiteTab(BurpExtender.this); 
-	          stdout.println("[+] jsEncrypter is loaded");
-	          stdout.println("[+] ^_^");
-	          stdout.println(getBanner());
+	          BurpExtender.this.callbacks.addSuiteTab(BurpExtender.this);
+	          stdout.println(Utils.getBanner());
 	        }
 	      });
 		
@@ -49,23 +47,9 @@ public class BurpExtender implements IBurpExtender,IIntruderPayloadProcessor,ITa
 
 	@Override
 	public byte[] processPayload(byte[] currentPayload, byte[] originalPayload, byte[] baseValue) {
-		byte[] newPayload = "".getBytes();
 		String payload = new String(currentPayload);
-		String strPayload = null;
-		try {
-			HttpClient hc = new HttpClient(gui.getURL());
-			hc.setConnTimeout(gui.getTimeout());
-			hc.setReadTimeout(gui.getTimeout());
-			String data = "payload=" + payload;
-			hc.setData(data);
-			hc.sendPost();
-			strPayload = hc.getRspData();
-		} catch (Exception e) {
-			stderr.println(e.getMessage());
-			newPayload = e.getMessage().getBytes();
-		}
-		newPayload = helpers.stringToBytes(strPayload);
-		return newPayload;
+		String newPayload = Utils.sendPayload(payload);
+		return helpers.stringToBytes(newPayload);
 	}
 
 	//
@@ -81,18 +65,4 @@ public class BurpExtender implements IBurpExtender,IIntruderPayloadProcessor,ITa
 	public Component getUiComponent() {
 		return gui.getComponet();
 	}
-	
-	//////////////////////////////////////////////////////////////////////
-	
-	public String getBanner(){
-		String bannerInfo = 
-				    "[+]\n"
-				  + "[+] #####################################\n"
-				  + "[+]    " + extensionName + " v" + version +"\n"
-				  + "[+]    anthor: c0ny1\n"
-				  + "[+]    email:  root@gv7.me\n"
-				  + "[+]    github: http://github.com/c0ny1/jsEncrypter\n"
-				  + "[+] ####################################";
-		return bannerInfo;
-	}	
 }

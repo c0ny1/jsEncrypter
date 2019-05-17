@@ -8,14 +8,8 @@ import java.awt.FlowLayout;
 import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.io.PrintWriter;
 
 public class GUI{
-	private IBurpExtenderCallbacks mCall;
-	private IExtensionHelpers helpers;
-	private PrintWriter stdout;
-	private PrintWriter stderr;
-	
 	private JPanel contentPane;
 	private JLabel lbHost;
 	private JTextField tfHost;
@@ -42,11 +36,7 @@ public class GUI{
 			"woaini520","woaini","100200","1314520"
 	};
 
-	public GUI(IBurpExtenderCallbacks callbacks) {
-		this.mCall = callbacks;
-		this.helpers = callbacks.getHelpers();
-		this.stdout = new PrintWriter(callbacks.getStdout(), true);
-		this.stderr = new PrintWriter(callbacks.getStderr(), true);
+	public GUI() {
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
@@ -85,24 +75,24 @@ public class GUI{
 		btnConn.setToolTipText("Test the connection phantomJS");
 		btnConn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				GUI.this.testConnect();
+				GUI.this.TestConnect();
 			}
 		});
 		panel.add(btnConn);
 		
 		lbConnectInfo = new JLabel("IsConnect:");
 		panel.add(lbConnectInfo);
-		lbConnectStatus = new JLabel("noknow");
+		lbConnectStatus = new JLabel("unknown");
 		lbConnectStatus.setForeground(new Color(0, 0, 255));
 		panel.add(lbConnectStatus);
 		
 		btnTest = new JButton("Test");
 		btnTest.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				testConnect();
+				GUI.this.TestConnect();
 				if(isSucces){
-					GUI.this.Test();
-					GUI.this.stdout.println("[+] test...");
+					GUI.this.TestPayload();
+					BurpExtender.stdout.println("[+] test...");
 				}else{
 					JOptionPane.showMessageDialog(contentPane, "Please check if you can connect phantomJS!", "alert", JOptionPane.ERROR_MESSAGE);
 				}
@@ -134,12 +124,12 @@ public class GUI{
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		splitPane.setRightComponent(spResultPayload);
 		
-		mCall.customizeUiComponent(panel);
-		mCall.customizeUiComponent(btnTest);
-		mCall.customizeUiComponent(btnConn);
-		mCall.customizeUiComponent(taTestPayload);
-		mCall.customizeUiComponent(splitPane);
-		mCall.customizeUiComponent(contentPane);
+		BurpExtender.callbacks.customizeUiComponent(panel);
+		BurpExtender.callbacks.customizeUiComponent(btnTest);
+		BurpExtender.callbacks.customizeUiComponent(btnConn);
+		BurpExtender.callbacks.customizeUiComponent(taTestPayload);
+		BurpExtender.callbacks.customizeUiComponent(splitPane);
+		BurpExtender.callbacks.customizeUiComponent(contentPane);
 	}
 	
 	public Component getComponet(){
@@ -149,41 +139,39 @@ public class GUI{
 	public Integer getTimeout(){
 		return Integer.valueOf(tfTimeout.getText());
 	}
+
+	// 发送连接测试，确定是否能连接加密服务端
+	private void TestConnect(){
+		boolean isConn = Utils.sendTestConnect();
+		if(isConn){
+			BurpExtender.stdout.println("[+] connect success!");
+			lbConnectStatus.setText("True");
+			isSucces = true;
+			lbConnectStatus.setForeground(new Color(0,255,0));
+		}else{
+			BurpExtender.stdout.println("[-] connect fail!");
+			lbConnectStatus.setText("False");
+			isSucces = false;
+			lbConnectStatus.setForeground(new Color(255,0,0));
+		}
+	}
+
 	
-	// 测试
-	private void Test() {
+	// 发送测试payload，确定是否加密成功
+	private void TestPayload() {
 		taResultPayload.setText("");
 		btnTest.setEnabled(false);
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				String[] payloads = taTestPayload.getText().split("\n\r");
 				for (String payload : payloads) {
-					String newPayload = sendTestPaylaod(payload);
+					String newPayload = Utils.sendPayload(payload);
 					taResultPayload.append(newPayload + "\n\r");
 				}
 				btnTest.setEnabled(true);
 			}
 		});
 	}
-
-	// 发送测试payload
-	private String sendTestPaylaod(String payload) {
-		String newPayload = null;
-		try {
-			HttpClient hc = new HttpClient(this.getURL());
-			hc.setConnTimeout(Integer.valueOf(tfTimeout.getText()));
-			hc.setReadTimeout(Integer.valueOf(tfTimeout.getText()));
-			String data = "payload=" + payload;
-			hc.setData(data);
-			hc.sendPost();
-			newPayload = hc.getRspData();
-		} catch (Exception e) {
-			stderr.println(e.getMessage());
-			newPayload = e.getMessage();
-		}
-		return newPayload;
-	}
-
 
 	// 获取phantomJS
 	public String getURL(){
@@ -192,33 +180,5 @@ public class GUI{
 		String port = tfPort.getText().trim();
 		URL = String.format("http://%s:%s",host,port);
 		return URL;
-	}
-	
-	//测试连接phantomJS
-	private void testConnect(){
-		try {
-			HttpClient hc = new HttpClient(this.getURL());
-			hc.setReadTimeout(Integer.valueOf(tfTimeout.getText()));
-			hc.setConnTimeout(Integer.valueOf(tfTimeout.getText()));
-			hc.sendGet();
-			int n = helpers.indexOf(hc.getRspData().getBytes(), "hello".getBytes(), false, 0, hc.getRspData().length());
-			if((hc.getStatusCode() == 200)&&(n != -1)){
-				stdout.println("[+] connect success!");
-				lbConnectStatus.setText("True");
-				isSucces = true;
-				lbConnectStatus.setForeground(new Color(0,255,0));
-			}else{
-				stdout.println("[-] connect fail!");
-				lbConnectStatus.setText("False");
-				isSucces = false;
-				lbConnectStatus.setForeground(new Color(255,0,0));
-			}
-		} catch (Exception e) {
-			stderr.println(e.getMessage());
-			stdout.println("[-] connect fail!");
-			lbConnectStatus.setText("False");
-			isSucces = false;
-			lbConnectStatus.setForeground(new Color(255,0,0));
-		}
 	}
 }
