@@ -7,11 +7,11 @@ import javax.swing.SwingUtilities;
 public class BurpExtender implements IBurpExtender,IIntruderPayloadProcessor,ITab {
     public final static String extensionName = "jsEncrypter";
 	public final static String version ="0.2.2";
-	private IBurpExtenderCallbacks callbacks;
-	private IExtensionHelpers helpers;
-	private PrintWriter stdout;
-	private PrintWriter stderr;
-	private GUI gui;
+	public static IBurpExtenderCallbacks callbacks;
+	public static IExtensionHelpers helpers;
+	public static PrintWriter stdout;
+	public static PrintWriter stderr;
+	public static GUI gui;
 	
 	@Override
 	public void registerExtenderCallbacks(IBurpExtenderCallbacks callbacks) {
@@ -21,6 +21,7 @@ public class BurpExtender implements IBurpExtender,IIntruderPayloadProcessor,ITa
 		this.stderr = new PrintWriter(callbacks.getStderr(),true);
 		
 		callbacks.setExtensionName(extensionName+" "+version);
+		callbacks.registerContextMenuFactory(new Menu());
 		callbacks.registerIntruderPayloadProcessor(this);
 
 		BurpExtender.this.gui = new GUI(callbacks);
@@ -49,9 +50,7 @@ public class BurpExtender implements IBurpExtender,IIntruderPayloadProcessor,ITa
 	@Override
 	public byte[] processPayload(byte[] currentPayload, byte[] originalPayload, byte[] baseValue) {
 		byte[] newPayload = "".getBytes();
-
 		String payload = new String(currentPayload);
-
 		String strPayload = null;
 		try {
 			HttpClient hc = new HttpClient(gui.getURL());
