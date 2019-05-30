@@ -1,8 +1,10 @@
 /**
  * author: c0ny1
  * date: 2017-12-16
+ * last update: 2019-5-30 11:16
  */
- 
+var fs = require('fs');
+var logfile = 'jsEncrypter.log';
 var webserver = require('webserver');
 server = webserver.create();
 
@@ -35,7 +37,9 @@ var service = server.listen(host+':'+port,function(request, response){
 		if(request.method == 'POST'){
 			var payload = request.post['payload'];
 			var encrypt_payload = js_encrypt(payload); 
-			console.log('[+] ' + payload + ':' + encrypt_payload);
+			var log = payload + ':' + encrypt_payload;
+			console.log('[+] ' + log);
+            fs.write(logfile,log + '\n', 'w+');
 			response.statusCode = 200;
 			response.write(encrypt_payload.toString());
 			response.close();
