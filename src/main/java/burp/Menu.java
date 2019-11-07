@@ -28,8 +28,9 @@ public class Menu implements IContextMenuFactory{
                     String strReq = new String(byteReq);
                     String strSelect = new String(byteReq, selectRange[0],(selectRange[1]-selectRange[0]), "UTF-8");
                     String strEncrypt = Utils.sendPayload(strSelect);
-                    strReq = strReq.replace(strSelect,strEncrypt);
-                    byte[] newRequst = BurpExtender.helpers.stringToBytes(strReq);
+                    StringBuffer sbReq = new StringBuffer(strReq);
+                    sbReq.replace(selectRange[0],selectRange[1],strEncrypt);
+                    byte[] newRequst = BurpExtender.helpers.stringToBytes(sbReq.toString());
                     reqRsp.setRequest(newRequst);
                 } catch (UnsupportedEncodingException er) {
                     BurpExtender.stderr.println(er.getMessage());
