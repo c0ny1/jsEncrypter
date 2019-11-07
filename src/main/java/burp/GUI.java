@@ -24,6 +24,7 @@ public class GUI{
 	private JSplitPane splitPane;
 	private Component verticalStrut;
 	private JTextArea taTestPayload;
+	//private JTextPane taTestPayload;
 	private JScrollPane spTestPayload;
 	private JTextArea taResultPayload;
 	private JScrollPane spResultPayload;
@@ -108,9 +109,14 @@ public class GUI{
 
 		taTestPayload = new JTextArea();
 		taTestPayload.setColumns(30);
+		String tmp = "";
 		for (String payload : testPayload) {
-			taTestPayload.append(payload + "\n\r");
+			//JTextArea.append 会导致汉化版无法换行
+			//taTestPayload.append(payload + System.lineSeparator());
+			 payload += System.lineSeparator();
+			 tmp += payload;
 		}
+		taTestPayload.setText(tmp);
 
         spTestPayload = new JScrollPane(taTestPayload,
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -163,11 +169,14 @@ public class GUI{
 		btnTest.setEnabled(false);
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				String[] payloads = taTestPayload.getText().split("\n\r");
+				String[] payloads = taTestPayload.getText().split(System.lineSeparator());
+				String tmp = "";
 				for (String payload : payloads) {
 					String newPayload = Utils.sendPayload(payload);
-					taResultPayload.append(newPayload + "\n\r");
+					newPayload += System.lineSeparator();
+					tmp += newPayload;
 				}
+				taResultPayload.setText(tmp);
 				btnTest.setEnabled(true);
 			}
 		});
