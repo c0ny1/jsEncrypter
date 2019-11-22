@@ -169,9 +169,12 @@ public class GUI{
 		btnTest.setEnabled(false);
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				String[] payloads = taTestPayload.getText().split(System.lineSeparator());
+				String[] payloads = taTestPayload.getText().split("\r|\n");
 				String tmp = "";
 				for (String payload : payloads) {
+					if(payload.equals(null)||payload.equals("")){
+						continue;
+					}
 					String newPayload = Utils.sendPayload(payload);
 					newPayload += System.lineSeparator();
 					tmp += newPayload;
