@@ -6,7 +6,7 @@ import javax.swing.SwingUtilities;
 
 public class BurpExtender implements IBurpExtender,IIntruderPayloadProcessor,ITab {
     public final static String extensionName = "jsEncrypter";
-	public final static String version ="0.3.1";
+	public final static String version ="0.3.2";
 	public static IBurpExtenderCallbacks callbacks;
 	public static IExtensionHelpers helpers;
 	public static PrintWriter stdout;
