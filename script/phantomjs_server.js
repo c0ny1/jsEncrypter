@@ -14,7 +14,7 @@ var port = '1664';
 /* 1.在这引入实现加密所有js文件,注意引入顺序和网页一致 */
 loadScript("script-1.js");
 loadScript("script-2.js");
-load_script("script-n.js");
+loadScript("script-n.js");
 /**********************************************/
 
 function loadScript(scriptName) {
