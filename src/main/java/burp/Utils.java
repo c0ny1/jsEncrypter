@@ -1,5 +1,7 @@
 package burp;
 
+import com.sun.org.apache.bcel.internal.generic.NEW;
+
 public class Utils {
     public static String sendPayload(String payload){
         String encryptPayload = "";
@@ -38,5 +40,19 @@ public class Utils {
                         + "[+]    github: http://github.com/c0ny1/jsEncrypter\n"
                         + "[+] ####################################";
         return bannerInfo;
+    }
+
+    /**
+     * 转换字符串编码
+     */
+    public static String transformCharset(String str,String charsetName){
+        String newStr = null;
+        try {
+            newStr = new String(str.getBytes(), charsetName);
+        }catch (Exception e){
+            BurpExtender.stdout.println("[-] Utils.transformCharset erro: " + e.getMessage());
+            newStr = str;
+        }
+        return newStr;
     }
 }

@@ -8,6 +8,7 @@ import java.awt.FlowLayout;
 import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.io.UnsupportedEncodingException;
 
 public class GUI{
 	private JPanel contentPane;
@@ -179,6 +180,12 @@ public class GUI{
 					newPayload += System.lineSeparator();
 					tmp += newPayload;
 				}
+
+				// 如果是Windows，先UTF-8编码在显示，解决Windows上乱码问题
+				if(System.getProperty("os.name").toLowerCase().contains("win")){
+					tmp = Utils.transformCharset(tmp,"UTF-8");
+				}
+
 				taResultPayload.setText(tmp);
 				btnTest.setEnabled(true);
 			}
